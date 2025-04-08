@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Simple HTML Editor (No execCommand)</title>
+<style>
+#editor {
+  width: 80%;
+  height: 400px;
+  border: 1px solid #ccc;
+  margin: 20px auto;
+  padding: 10px;
+  font-family: monospace;
+  overflow: auto;
+}
+
+#controls {
+  width: 80%;
+  margin: 0 auto 10px auto;
+  text-align: center;
+}
+
+button {
+  padding: 5px 10px;
+  margin: 5px;
+}
+</style>
+</head>
+<body>
+
+
+
+<button id="boldButton">Bold</button>
+<div contenteditable="true" id="editableArea">
+  This is some editable text. Select a part of it and click the button.
+</div>
+
+<script>
+function toggleBold() {
+  const selection = window.getSelection();
+
+  // Check if there is any selected text
+  if (!selection || selection.rangeCount === 0) {
+    return; // Do nothing if no text is selected
+  }
+
+  const range = selection.getRangeAt(0);
+  const selectedText = range.toString();
+  const parentElement = range.commonAncestorContainer.parentNode;
+  const isBold = parentElement && parentElement.tagName === 'B';
+
+  if (isBold) {
+    // Remove the bold tag
+    const newTextNode = document.createTextNode(selectedText);
+    parentElement.parentNode.insertBefore(newTextNode, parentElement);
+    parentElement.parentNode.removeChild(parentElement);
+
+    // Re-select the text (optional, for better user experience)
+    const newRange = document.createRange();
+    newRange.setStart(newTextNode, 0);
+    newRange.setEnd(newTextNode, selectedText.length);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+
+  } else {
+    // Apply the bold tag
+    const boldElement = document.createElement('b');
+    boldElement.appendChild(document.createTextNode(selectedText));
+    range.deleteContents();
+    range.insertNode(boldElement);
+
+    // Re-select the text (optional)
+    const newRange = document.createRange();
+    newRange.selectNodeContents(boldElement);
+    selection.removeAllRanges();
+    selection.addRange(newRange);
+  }
+}
+
+// Example of how to attach this function to a button's onclick event:
+const boldButton = document.getElementById('boldButton'); // Assuming you have a button with id="boldButton"
+if (boldButton) {
+  boldButton.onclick = toggleBold;
+}
+
+</script>
+
+</body>
+</html>

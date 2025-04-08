@@ -14,26 +14,28 @@ export default class HTMLEditor extends HTMLElement {
         this[name] = newValue;
     }
 
-    init(){
-        this.tools = this.shadow.querySelectorAll('.tool');                
+    init() {
+        this.tools = this.shadow.querySelectorAll('.tool');
         this.editor = this.shadow.querySelector('.editor');
         this.preview = this.shadow.querySelector('.preview');
 
-        this.applyToolEvent();
+        this.applyToolEvents();
     }
 
-    applyToolEvent(){        
-        this.tools.forEach(tool => {            
+    applyToolEvents() {
+        this.tools.forEach(tool => {
             tool.addEventListener('click', (e) => {
+                e.preventDefault();
                 this.format(e.target.dataset.command);
-            } );
+            });
         });
     }
 
-    format(command, value=null) {
-        console.log(command);
-        document.execCommand(command, false, value);
-    }    
+    format(command, value = null) {
+        const selection = this.shadow.getSelection();
+        console.log(selection.getRangeAt(0).toString());
+
+    }
 
     render() {
         this.shadow.innerHTML = `
@@ -52,14 +54,18 @@ export default class HTMLEditor extends HTMLElement {
                     background-color: #f2f2f2;
                     padding:4px;                                    
                 }
-                .tool{
+
+                .tool-icon{
                     width: 16px;
                     height: 16px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     padding:8px;
-                    cursor: pointer;
+                    pointer-events: none; 
+                }
+                .tool{                    
+                    cursor: pointer;                    
                 }
                 .tool:hover{
                     background-color: #e0e0e0;
@@ -86,15 +92,25 @@ export default class HTMLEditor extends HTMLElement {
                     background-color: #e0e0e0;
                     color: #000;
                 }
+
+                svg{
+                    pointer-events: none;                    
+                }
             </style>
             <div class="html-editor">
                 <div class="toolbar">
-                    <div class="tool tool-bold" title="Bold" data-command="bold">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 64C0 46.3 14.3 32 32 32l48 0 16 0 128 0c70.7 0 128 57.3 128 128c0 31.3-11.3 60.1-30 82.3c37.1 22.4 62 63.1 62 109.7c0 70.7-57.3 128-128 128L96 480l-16 0-48 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l16 0 0-160L48 96 32 96C14.3 96 0 81.7 0 64zM224 224c35.3 0 64-28.7 64-64s-28.7-64-64-64L112 96l0 128 112 0zM112 288l0 128 144 0c35.3 0 64-28.7 64-64s-28.7-64-64-64l-32 0-112 0z"/></svg>
-                    </div>
-                    <div class="tool tool-italic" title="Italic" data-command="italic">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M128 64c0-17.7 14.3-32 32-32l192 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-58.7 0L160 416l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l58.7 0L224 96l-64 0c-17.7 0-32-14.3-32-32z"/></svg>
-                    </div>
+                
+                    <button class="tool tool-bold" title="Bold" data-command="bold">
+                        <div class="tool-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M0 64C0 46.3 14.3 32 32 32l48 0 16 0 128 0c70.7 0 128 57.3 128 128c0 31.3-11.3 60.1-30 82.3c37.1 22.4 62 63.1 62 109.7c0 70.7-57.3 128-128 128L96 480l-16 0-48 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l16 0 0-160L48 96 32 96C14.3 96 0 81.7 0 64zM224 224c35.3 0 64-28.7 64-64s-28.7-64-64-64L112 96l0 128 112 0zM112 288l0 128 144 0c35.3 0 64-28.7 64-64s-28.7-64-64-64l-32 0-112 0z"/></svg>
+                        </div>
+                    </button>
+
+                    <button class="tool tool-italic" title="Italic" data-command="italic">                    
+                        <div class="tool-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M128 64c0-17.7 14.3-32 32-32l192 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-58.7 0L160 416l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32s14.3-32 32-32l58.7 0L224 96l-64 0c-17.7 0-32-14.3-32-32z"/></svg>
+                        </div>
+                    </button>
                     <div class="tool tool-underline" title="Underline" data-command="underline">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M16 64c0-17.7 14.3-32 32-32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-16 0 0 128c0 53 43 96 96 96s96-43 96-96l0-128-16 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l96 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-16 0 0 128c0 88.4-71.6 160-160 160s-160-71.6-160-160L64 96 48 96C30.3 96 16 81.7 16 64zM0 448c0-17.7 14.3-32 32-32l384 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 480c-17.7 0-32-14.3-32-32z"/></svg>
                     </div>
