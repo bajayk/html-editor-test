@@ -14,14 +14,22 @@ export default class HTMLEditor extends HTMLElement {
         this[name] = newValue;
     }
 
+    set html(value) {
+        this.editor.innerHTML = value;
+    }
+    
+    get html() {
+        return this.editor.innerHTML;
+    }
+
     init() {
         this.tools = this.shadow.querySelectorAll('.tool');
         this.editor = this.shadow.querySelector('.editor');
-        this.preview = this.shadow.querySelector('.preview');
-        this.tabs = this.shadow.querySelectorAll('.tab');
+        //this.preview = this.shadow.querySelector('.preview');
+        //this.tabs = this.shadow.querySelectorAll('.tab');
 
         this.applyToolEvents();
-        this.applyTabEvents();
+        //this.applyTabEvents();
     }
 
     applyToolEvents() {
@@ -136,6 +144,16 @@ export default class HTMLEditor extends HTMLElement {
                 svg{
                     pointer-events: none;                    
                 }
+
+                #editor{
+                    flex: 1;
+                    padding: 8px;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 4px;
+                    background-color: #fff;
+                    min-height: 200px;
+                    overflow-y: auto;                    
+                }
             </style>
             <div class="html-editor">
                 <div class="toolbar">
@@ -202,19 +220,19 @@ export default class HTMLEditor extends HTMLElement {
                         </div>
                     </button>
                 </div>
-                <div class="editor-preview-tabs">
+                <!--<div class="editor-preview-tabs">
                     <div class="tab tab-editor active">
                         Editor
                     </div>
                     <div class="tab tab-preview">
                         Preview
                     </div>
-                </div>
-                <div class="editor" contenteditable="true">
+                </div>-->
+                <div id="editor" class="editor" contenteditable="true">
                     <p>Please type here</p>
                 </div>
-                <div class="preview">
-                </div>
+                <!--<div class="preview" contenteditable="true">
+                </div>-->
             </div>
         `;
     }
